@@ -1,0 +1,12 @@
+/.venv/
+/reference/
+/txt/
+/.vscode/
+**/__pycache__/**
+/models/
+/test/**
+/upload/**
+/books/**
+
+**.log
+test.*
