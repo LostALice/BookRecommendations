@@ -1,14 +1,13 @@
 # Code by AkinoAlice@TyrantRey
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, flash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
+from pydantic import BaseModel
 
-from utils.vector_extractor import VectorExtractor
 from utils.ocr import OCR
 
 import os
-
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -20,6 +19,11 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+class Book(BaseModel):
+    title: str
+    author: str
 
 
 def allowed_file(filename: str) -> bool:
@@ -49,25 +53,24 @@ def upload_file():
     """uploading file
 
     Returns:
-        Response: request url
+        str: html template
     """
     if request.method == "POST":
         if "file" not in request.files:
             flash("No file part")
             return redirect(request.url)
 
-        file = request.files["file"]
+        image_file = request.files["file"]
 
-        if file.filename == "":
+        if image_file.filename == "":
             flash("No selected file")
             return redirect(request.url)
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+        if image_file and allowed_file(image_file.filename):
+            filename = secure_filename(image_file.filename)
             filepath = UPLOAD_FOLDER + filename
-            file.save(filepath)
+            image_file.save(filepath)
 
-            # Perform OCR on the uploaded file
             ocr_result = OCR_SCANNER.scan(filepath)
 
         else:

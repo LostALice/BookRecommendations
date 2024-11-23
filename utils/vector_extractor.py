@@ -1,8 +1,14 @@
 # Code by AkinoAlice@TyrantRey
 
 from text2vec import SentenceModel
+from pydantic import BaseModel
 
 import numpy as np
+
+
+class BookContext(BaseModel):
+    title: str
+    context: list[str]
 
 
 class VectorExtractor(object):
@@ -24,7 +30,26 @@ class VectorExtractor(object):
         """
         return np.array(self.embedding.encode(text))
 
+    def text_split(self, title: str = "", context: str = "") -> BookContext:
+        book_context = [text for text in context.split("\n\n")]
 
+        return BookContext(title=title, context=book_context)
+
+    def save_to_file(self, vector: list[np.ndarray], filename: str = "") -> str:
+
+        return f"./vector/{filename}.npy"
+
+
+# running testing on ./
 if __name__ == "__main__":
+    from pprint import pprint
+
+    with open("./books/American Notes.txt", "r", encoding="utf-8") as book:
+        txt = book.read()
+
     vector_extractor = VectorExtractor()
-    print(vector_extractor.encoder("how are you?").shape)
+    book_context = vector_extractor.text_split(
+        title="American Notes", context=txt)
+
+    for i in book_context.context:
+        pprint(vector_extractor.encoder(i))
