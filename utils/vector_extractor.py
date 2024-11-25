@@ -35,9 +35,19 @@ class VectorExtractor(object):
 
         return BookContext(title=title, context=book_context)
 
-    def save_to_file(self, vector: list[np.ndarray], filename: str = "") -> str:
+    def save_to_file(self, vector: list[np.ndarray], filename: str = "unnamed") -> str:
+        """save vector to file
 
-        return f"./vector/{filename}.npy"
+        Args:
+            vector (list[np.ndarray]): list of numpy arrays
+            filename (str, optional): save filename. Defaults to "unnamed".
+
+        Returns:
+            str: save file path
+        """
+        _save_path = f"./vector/{filename}.npz"
+        np.savez(file=_save_path, vector=vector)
+        return _save_path
 
 
 # running testing on ./
