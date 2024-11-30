@@ -3,8 +3,10 @@
 from flask import Flask, render_template, request, redirect, flash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from pydantic import BaseModel
 
+import numpy as np
+
+from utils.vector_handler import VectorHandler
 from utils.ocr import OCR
 
 import os
@@ -16,14 +18,36 @@ load_dotenv()
 OCR_SCANNER = OCR()
 UPLOAD_FOLDER = "./uploads/"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
-
+vector_handler = VectorHandler()
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-class Book(BaseModel):
-    title: str
-    author: str
+def recommending_book(ocr_result_vector: np.ndarray) -> str:
+    """helper function to recommend a book using vector similarity
+
+    Args:
+        ocr_result_vector (np.ndarray): ocr vector result
+
+    Returns:
+        str: book title
+    """
+    distance = float("inf")
+    book_title = ""
+
+    for book_vector_path in os.listdir("./vector"):
+        file_name, books_vectors = vector_handler.read_from_file(
+            f"./vector/{book_vector_path}")
+        vector_distance = vector_handler.calculate_similarity(
+            ocr_result_vector, books_vectors)
+
+        if vector_distance < distance:
+            distance = vector_distance
+
+            # example.npz => example
+            book_title = file_name
+
+    return book_title
 
 
 def allowed_file(filename: str) -> bool:
@@ -72,12 +96,14 @@ def upload_file():
             image_file.save(filepath)
 
             ocr_result = OCR_SCANNER.scan(filepath)
+            ocr_result_vector = vector_handler.encoder(ocr_result)
+            recommended = recommending_book(ocr_result_vector)
 
         else:
             flash("Allowed file types are png, jpg, jpeg, gif")
             return redirect(request.url)
 
-    return render_template("index.html", ocr_result=ocr_result)
+    return render_template("index.html", ocr_result=ocr_result, recommended=recommended)
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ class BookContext(BaseModel):
     context: list[str]
 
 
-class VectorExtractor(object):
+class VectorHandler(object):
     def __init__(
         self, embedding_model_name: str = "shibing624/text2vec-base-chinese"
     ) -> None:
@@ -50,6 +50,34 @@ class VectorExtractor(object):
         np.savez(file=_save_path, vector=vector)
         return _save_path
 
+    def read_from_file(self, vector_path: str) -> tuple[str, list[np.ndarray]]:
+        """load vector from file
+
+        Args:
+            vector_path (str): path to vector
+
+        Returns:
+            list[np.ndarray]: return list of numpy arrays
+        """
+        file_name = vector_path.split("/")[-1]
+        _vector = np.load(vector_path)["vector"]
+
+        return file_name, _vector
+
+    def calculate_similarity(self, query_vector: np.ndarray, books_vectors: list[np.ndarray]) -> float:
+        """return the minimum similarity between vectors
+
+        Args:
+            query_vector (np.ndarray): ocr vector result
+            books_vectors (list[np.ndarray]): load from file vector
+
+        Returns:
+            float: distance between query vector and books vectors
+        """
+        distances = [np.linalg.norm(query_vector - book_vector)
+                     for book_vector in books_vectors]
+        return np.min(distances)
+
 
 # running testing on ./
 if __name__ == "__main__":
@@ -60,11 +88,11 @@ if __name__ == "__main__":
     with open(f"./books/{book_name}.txt", "r", encoding="utf-8") as book:
         txt = book.read()
 
-    vector_extractor = VectorExtractor()
-    book_context = vector_extractor.text_split(
+    vector_Handler = VectorHandler()
+    book_context = vector_Handler.text_split(
         title=book_name, context=txt)
 
     vector = []
     for i in tqdm(book_context.context):
-        vector.append(vector_extractor.encoder(i))
-    vector_extractor.save_to_file(vector, book_name)
+        vector.append(vector_Handler.encoder(i))
+    vector_Handler.save_to_file(vector, book_name)
