@@ -2,6 +2,7 @@
 
 from text2vec import SentenceModel
 from pydantic import BaseModel
+from tqdm import tqdm
 
 import numpy as np
 
@@ -54,12 +55,16 @@ class VectorExtractor(object):
 if __name__ == "__main__":
     from pprint import pprint
 
-    with open("./books/American Notes.txt", "r", encoding="utf-8") as book:
+    book_name = "Twelve Years a Slave"
+
+    with open(f"./books/{book_name}.txt", "r", encoding="utf-8") as book:
         txt = book.read()
 
     vector_extractor = VectorExtractor()
     book_context = vector_extractor.text_split(
-        title="American Notes", context=txt)
+        title=book_name, context=txt)
 
-    for i in book_context.context:
-        pprint(vector_extractor.encoder(i))
+    vector = []
+    for i in tqdm(book_context.context):
+        vector.append(vector_extractor.encoder(i))
+    vector_extractor.save_to_file(vector, book_name)
