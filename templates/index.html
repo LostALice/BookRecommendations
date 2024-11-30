@@ -1,62 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book Recommendation</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
+  </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="flex container max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <div class="px-4 container">
-            <h1 class="text-2xl font-bold text-gray-700 mb-4 text-center">Upload an Image</h1>
-            {% if ocr_result %}
-            <div class="mt-6">
-                <div class="flex justify-between">
-                    <h2 class="text-lg font-medium text-gray-800">OCR Result:</h2>
-                    <button
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg focus:ring focus:ring-indigo-200 focus:outline-none"
-                        type="button" onclick="window.location.href=`{{ url_for('index') }}`">
-                        Back
-                    </button>
-                </div>
-                <label for="ocr_result" class="hidden">
-                </label>
-                <table>
-                    {% for book in books %}
-                    <tr>
-                        <td>{{ book.title }}</td>
-                        <td>{{ book.author }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-
-                <textarea placeholder="ocr result" name="ocr_result" readonly rows="10"
-                    class="mt-2 bg-gray-100 p-4 rounded-lg shadow-sm text-gray-700 w-full resize-none">
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div
+      class="flex container max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6"
+    >
+      <div class="px-4 container">
+        <h1 class="text-2xl font-bold text-gray-700 mb-4 text-center">
+          Upload an Image
+        </h1>
+        {% if ocr_result %}
+        <div class="mt-6">
+          <div class="flex justify-between">
+            <h2 class="text-lg font-medium text-gray-800">OCR Result:</h2>
+            <button
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg focus:ring focus:ring-indigo-200 focus:outline-none"
+              type="button"
+              onclick="window.location.href=`{{ url_for('index') }}`"
+            >
+              Back
+            </button>
+          </div>
+          <label for="ocr_result" class="hidden"> </label>
+          <textarea
+            placeholder="ocr result"
+            name="ocr_result"
+            readonly
+            rows="10"
+            class="mt-2 bg-gray-100 p-4 rounded-lg shadow-sm text-gray-700 w-full resize-none"
+          >
                     {{ ocr_result }}
-                </textarea>
-            </div>
-
-            {% else %}
-            <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                <div>
-                    <label for="file" class="block text-sm font-medium text-gray-600">Choose an image</label>
-                    <input placeholder="image file" type="file" name="file" accept="image/*" required
-                        class="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none p-2 mt-1">
-                </div>
-
-                <div class="text-center">
-                    <button type="submit"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg focus:ring focus:ring-indigo-200 focus:outline-none">
-                        Upload
-                    </button>
-                </div>
-            </form>
-            {% endif %}
+                </textarea
+          >
+          <div class="p-1">
+            <span>We Recommend to you this book:<b> {{ recommended }}</b></span>
+          </div>
         </div>
-    </div>
-</body>
 
+        {% else %}
+        <form
+          action="{{ url_for('upload_file') }}"
+          method="POST"
+          enctype="multipart/form-data"
+          class="space-y-4"
+        >
+          <div>
+            <label for="file" class="block text-sm font-medium text-gray-600"
+              >Choose an image</label
+            >
+            <input
+              placeholder="image file"
+              type="file"
+              name="file"
+              accept="image/*"
+              required
+              class="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:outline-none p-2 mt-1"
+            />
+          </div>
+
+          <div class="text-center">
+            <button
+              type="submit"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg focus:ring focus:ring-indigo-200 focus:outline-none"
+            >
+              Upload
+            </button>
+          </div>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </body>
 </html>

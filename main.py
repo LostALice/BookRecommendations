@@ -98,12 +98,12 @@ def upload_file():
             ocr_result = OCR_SCANNER.scan(filepath)
             ocr_result_vector = vector_handler.encoder(ocr_result)
             recommended = recommending_book(ocr_result_vector)
-
+            print(recommended)
         else:
             flash("Allowed file types are png, jpg, jpeg, gif")
             return redirect(request.url)
 
-    return render_template("index.html", ocr_result=ocr_result, recommended=recommended)
+    return render_template("index.html", ocr_result=ocr_result, recommended=recommended[:-4])
 
 
 if __name__ == "__main__":

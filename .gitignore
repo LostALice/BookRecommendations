@@ -5,7 +5,7 @@
 **/__pycache__/**
 /models/
 /test/**
-/upload/**
+/uploads/**
 
 **.log
 test.*
