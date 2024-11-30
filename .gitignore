@@ -6,7 +6,6 @@
 /models/
 /test/**
 /upload/**
-/books/**
 
 **.log
 test.*
